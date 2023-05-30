@@ -1,6 +1,6 @@
-# Banco de Dados I - 1°TADS-2023
+# Banco de Dados I - 1°TADS | 2023
 
-Repositório para a matéria de Banco de Dados I - 2023
+Repositório para a matéria de Banco de Dados I - 1°TADS | 2023.
 
 ## IFPR
 
