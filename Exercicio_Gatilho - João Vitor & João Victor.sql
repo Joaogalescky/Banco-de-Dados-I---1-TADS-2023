@@ -45,16 +45,16 @@ create table LIVROS(
 );
 
 insert into LIVROS(Titulo, Ano, Estilo, id_Autor, Disponibilidade) values
-("Dom Casmurro", 1899, "romance", 1, 1),
-("Memórias Póstulas de Brás Cubas", 1881, "romance", 1, 1),
-("O Capital", 1887, "filósofia", 2, 1),
-("Uma Contribuição para a Crítica da Economia Política", 1850, "filósofia", 2, 1),
-("A Ética Protestante", 1904, "filósofia", 3, 1),
-("O Político e o Cientista", 1919, "filósofia", 3, 1),
-("A riqueza das nações", 1776, "filósofia", 4, 1),
-("A mão invisível", 1759, "filósofia", 4, 1),
-("Da Divisão do Trabalho Social", 1893, "sociologia", 5, 1),
-("As Regras do Método Sociológico", 1895, "sociologia", 5, 1);
+("Dom Casmurro", 1899, "romance", 1, "disponivel"),
+("Memórias Póstulas de Brás Cubas", 1881, "romance", 1, "disponivel"),
+("O Capital", 1887, "filósofia", 2, "disponivel"),
+("Uma Contribuição para a Crítica da Economia Política", 1850, "filósofia", 2, "disponivel"),
+("A Ética Protestante", 1904, "filósofia", 3, "disponivel"),
+("O Político e o Cientista", 1919, "filósofia", 3, "disponivel"),
+("A riqueza das nações", 1776, "filósofia", 4, "disponivel"),
+("A mão invisível", 1759, "filósofia", 4, "disponivel"),
+("Da Divisão do Trabalho Social", 1893, "sociologia", 5, "disponivel"),
+("As Regras do Método Sociológico", 1895, "sociologia", 5, "disponivel");
 
 select * from LIVROS;
 
@@ -74,12 +74,26 @@ insert into EMPRESTIMOS (Data_emprestimo, idUsuario, idLivro) values
 
 select * from EMPRESTIMOS;
 
+-- Gatilho (Trigger) status "emprestado"
 DELIMITER $ 
-create trigger TGR_Emprestimo_Insert after insert
+create trigger TGR_Emprestimo_Emprestado after insert
 on EMPRESTIMOS
 for each row
 begin
-	update LIVROS set Disponibilidade = 1 + NEW.id_Emprestimo
-    where id_Livro = NEW.LIVROS; 
+	update LIVROS set Disponibilidade = "emprestado"
+    where id_Livro = NEW.EMPRESTIMOS; 
 end$
-DELIMITER ; 
+DELIMITER ;
+
+-- Gatilho (Trigger) status "disponibilidade"
+DELIMITER $
+create trigger TGR_Emprestimo_Disponivel after insert
+on EMPRESTIMOS
+for each row
+begin
+	update LIVROS set Disponibilidade = "disponivel"
+    where Data_devolucao = NEW.EMPRESTIMOS;
+    -- Ideia --> Alterar de "emprestado" para "disponivel" quando for detectado o preenchimento da Data_devolucao
+end$
+DELIMITER ;
+
