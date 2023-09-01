@@ -37,7 +37,7 @@ create table LIVROS(
 	id_Livro int not null auto_increment,
     Titulo varchar (100) not null,
     Estilo varchar (50) not null,
-    Ano int (4) not null,
+    Ano int not null,
     Disponibilidade varchar (25) not null,
     Autor_id int not null,
 	primary key (id_Livro),
@@ -71,7 +71,7 @@ create table EMPRESTIMOS(
 
 -- Gatilho (Trigger) status "emprestado"
 DELIMITER $ 
-create trigger TGR_Emprestimo_Emprestado after insert
+create trigger TGR_Emprestimo_Atualizar_Status_Emprestado after insert
 on EMPRESTIMOS
 for each row
 begin
@@ -81,15 +81,18 @@ begin
 end$
 DELIMITER ;
 
--- Gatilho (Trigger) status "disponibilidade"
+-- Gatilho (Trigger) status "disponivel"
 DELIMITER $
-create trigger TGR_Emprestimo_Disponivel after insert
+create trigger TGR_Emprestimo_Atualizar_Status_Disponivel after update
 on EMPRESTIMOS
 for each row
 begin
-	update LIVROS set Disponibilidade = 'disponivel'
-    where id_Livro = NEW.Livro_id;
-    -- Ideia --> Alterar de "emprestado" para "disponivel" quando for detectado o preenchimento da Data_devolucao
+	if NEW.Data_devolucao is not null then
+    -- Se a Data_devolucao não estiver vazio, atualize o campo Disponibilidade da tabela LIVROS para 'disponivel'
+    -- onde id_Livro (LIVROS) = Livro_id (EMPRESTIMO)
+		update LIVROS set Disponibilidade = 'disponivel'
+		where id_Livro = NEW.Livro_id;
+    end if;
 end$
 DELIMITER ;
 
@@ -104,5 +107,3 @@ update EMPRESTIMOS set Data_devolucao = '2023-09-01'
 where Usuario_id = 1 and Livro_id = 2;
 
 select * from LIVROS;
-
-select * from EMPRESTIMOS;
