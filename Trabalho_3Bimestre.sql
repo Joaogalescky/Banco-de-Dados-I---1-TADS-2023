@@ -58,10 +58,13 @@ select * from VW_Jogador_Partida
 
 -- PROCEDURE -- b)
 DELIMITER $
-create procedure inserir_jogador (idj int)
+create procedure inserir_jogador (
+IN i_jogador_id int, -- Declara um parâmetro de entrada
+IN i_partida_id int,
+IN i_hora_entrada time)
 BEGIN
-	UPDATE Partida SET num_jogadores = num_jogadores + 1
-    WHERE Partida.id_partida = idj;
+	UPDATE JogandoPartida SET horario_inicio = i_hora_entrada
+    WHERE jogador_id = i_jogador_id AND partida_id = i_partida_id;
 END $
 DELIMITER ;
 
@@ -70,7 +73,7 @@ DELIMITER $
 create trigger TGR_atualizar_jogadores after insert on JogandoPartida
 for each row
 BEGIN
-	UPDATE Partida SET num_jogadores = num_jogadores
+	UPDATE Partida SET num_jogadores = num_jogadores + 1
     WHERE id_partida = NEW.partida_id;
 END $
 DELIMITER ;
@@ -113,11 +116,11 @@ insert into Jogador (nome_jogador, nivel_jogador) values
 
 -- Inserir um jogador (com ID 1) em uma partida (com ID 1) com horário de entrada e saída
 INSERT INTO JogandoPartida (partida_id, jogador_id, horario_inicio)
-VALUES (1, 1, '12:30:00');
+VALUES (1, 1);
 
 -- Inserir outro jogador (com ID 2) em outra partida (com ID 2) com horário de entrada e saída
 INSERT INTO JogandoPartida (partida_id, jogador_id, horario_inicio)
-VALUES (2, 2, '10:00:00');
+VALUES (2, 2);
 
 -- select
 select * from Partida;
